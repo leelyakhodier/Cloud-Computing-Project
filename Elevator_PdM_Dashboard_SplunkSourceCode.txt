@@ -1,0 +1,313 @@
+{
+    "title": "Elevator Maintenance Dashboard",
+    "description": "",
+    "inputs": {
+        "input_global_trp": {
+            "options": {
+                "defaultValue": "-24h@h,now",
+                "token": "global_time"
+            },
+            "title": "Global Time Range",
+            "type": "input.timerange"
+        }
+    },
+    "defaults": {
+        "dataSources": {
+            "ds.search": {
+                "options": {
+                    "queryParameters": {
+                        "earliest": "$global_time.earliest$",
+                        "latest": "$global_time.latest$"
+                    }
+                }
+            }
+        }
+    },
+    "visualizations": {
+        "viz_Gra9NcJg": {
+            "containerOptions": {},
+            "dataSources": {
+                "primary": "ds_ky6hsdB8"
+            },
+            "options": {
+                "collapseLabel": "",
+                "collapseThreshold": 1,
+                "labelDisplay": "valuesAndPercentage"
+            },
+            "showLastUpdated": false,
+            "showProgressBar": false,
+            "title": "Alert Status",
+            "type": "splunk.pie"
+        },
+        "viz_SjiReWeA": {
+            "containerOptions": {},
+            "context": {},
+            "dataSources": {
+                "primary": "ds_0mlaFzMA"
+            },
+            "options": {},
+            "showLastUpdated": false,
+            "showProgressBar": false,
+            "title": "Failure Probability OverTime",
+            "type": "splunk.parallelcoordinates"
+        },
+        "viz_Vv01onoK": {
+            "containerOptions": {},
+            "context": {
+                "majorColorEditorConfig": [
+                    {
+                        "to": 20,
+                        "value": "#D41F1F"
+                    },
+                    {
+                        "from": 20,
+                        "to": 40,
+                        "value": "#D94E17"
+                    },
+                    {
+                        "from": 40,
+                        "to": 60,
+                        "value": "#CBA700"
+                    },
+                    {
+                        "from": 60,
+                        "to": 80,
+                        "value": "#669922"
+                    },
+                    {
+                        "from": 80,
+                        "value": "#118832"
+                    }
+                ]
+            },
+            "dataSources": {
+                "primary": "ds_ApSlChpf"
+            },
+            "options": {
+                "isGaugeOn": true,
+                "majorColor": "> majorValue | rangeValue(majorColorEditorConfig)",
+                "radialBackgroundColor": "#000000"
+            },
+            "showLastUpdated": false,
+            "showProgressBar": false,
+            "title": "Elevators at Risk of Failure (Drop Down)",
+            "type": "splunk.singlevalueradial"
+        },
+        "viz_dDXqedGu": {
+            "containerOptions": {},
+            "dataSources": {
+                "primary": "ds_B15wk5XR"
+            },
+            "options": {
+                "backgroundColor": "#000000",
+                "seriesColors": [
+                    "#7B56DB",
+                    "#af575a",
+                    "#00CDAF",
+                    "#DD9900",
+                    "#FF677B",
+                    "#CB2196",
+                    "#813193",
+                    "#0051B5",
+                    "#008C80",
+                    "#99B100",
+                    "#FFA476",
+                    "#FF6ACE",
+                    "#AE8CFF",
+                    "#00689D",
+                    "#00490A",
+                    "#465D00",
+                    "#9D6300",
+                    "#F6540B",
+                    "#FF969E",
+                    "#E47BFE"
+                ],
+                "seriesColorsByField": {
+                    "avg(failure_probability)": "#af575a"
+                }
+            },
+            "showLastUpdated": false,
+            "showProgressBar": false,
+            "title": "Failure Probability By Alert",
+            "type": "splunk.bar"
+        },
+        "viz_iQGgcTdJ": {
+            "containerOptions": {},
+            "dataSources": {
+                "primary": "ds_1eKeZHeT"
+            },
+            "options": {
+                "backgroundColor": "> themes.defaultBackgroundColor",
+                "font": "monospace",
+                "fontSize": "large",
+                "tableFormat": {
+                    "align": "center",
+                    "headerAlign": "center",
+                    "rowBackgroundColors": "> table | seriesByIndex(0) | pick(tableAltRowBackgroundColorsByTheme)"
+                }
+            },
+            "showLastUpdated": false,
+            "showProgressBar": false,
+            "title": "Recommendations BreakDown",
+            "type": "splunk.table"
+        }
+    },
+    "dataSources": {
+        "ds_0mlaFzMA": {
+            "name": "Failure Probability OverTime search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| timechart avg(failure_probability) by alert",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_1eKeZHeT": {
+            "name": "Recommendations BreakDown search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| table recommendation failure_probability vibration",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_ApSlChpf": {
+            "name": "Elevators at Risk of Failure _Drop Down_ search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| stats count by recommendation",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_B15wk5XR": {
+            "name": "Failure Probability By Alert search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| chart avg(failure_probability) by alert",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_Hps5VwkO": {
+            "name": "Alert Status - Table search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\"\r\n| stats count by alert",
+                "queryParameters": {
+                    "earliest": "0"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_ky6hsdB8": {
+            "name": "Alert Status search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| stats count by alert",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_y1NQTL0T": {
+            "name": "Table search",
+            "options": {
+                "query": "source=\"predictions_predictions_with_alerts.csv\" host=\"Elevator Maintenance System\" sourcetype=\"csv\" \n| timechart avg(failure_probability) by alert",
+                "queryParameters": {
+                    "earliest": "-24h@h",
+                    "latest": "now"
+                }
+            },
+            "type": "ds.search"
+        }
+    },
+    "layout": {
+        "globalInputs": [
+            "input_global_trp"
+        ],
+        "layoutDefinitions": {
+            "layout_1": {
+                "options": {
+                    "display": "fit-to-width",
+                    "gutterSize": 13,
+                    "height": 1400,
+                    "width": 1800
+                },
+                "structure": [
+                    {
+                        "item": "viz_SjiReWeA",
+                        "position": {
+                            "h": 430,
+                            "w": 1230,
+                            "x": 570,
+                            "y": 440
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_Gra9NcJg",
+                        "position": {
+                            "h": 440,
+                            "w": 570,
+                            "x": 0,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_dDXqedGu",
+                        "position": {
+                            "h": 440,
+                            "w": 1234,
+                            "x": 568,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_Vv01onoK",
+                        "position": {
+                            "h": 430,
+                            "w": 570,
+                            "x": 0,
+                            "y": 440
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_iQGgcTdJ",
+                        "position": {
+                            "h": 520,
+                            "w": 1800,
+                            "x": 0,
+                            "y": 870
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            }
+        },
+        "options": {},
+        "tabs": {
+            "items": [
+                {
+                    "label": "Alert Status",
+                    "layoutId": "layout_1"
+                }
+            ]
+        }
+    },
+    "applicationProperties": {
+        "collapseNavigation": false
+    }
+}
